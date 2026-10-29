@@ -1,6 +1,3 @@
-// Add the real phone number in international format, for example +380XXXXXXXXX.
-const CONTACT_PHONE = '+380123456789';
-
 document.querySelectorAll('[data-filter]').forEach(button => {
   button.addEventListener('click', () => {
     document.querySelectorAll('[data-filter]').forEach(item => {
@@ -14,12 +11,21 @@ document.querySelectorAll('[data-filter]').forEach(button => {
   });
 });
 
-document.querySelector('[data-contact]').addEventListener('click', () => {
-  if (CONTACT_PHONE) {
-    window.location.href = `tel:${CONTACT_PHONE.replace(/[^+\d]/g, '')}`;
-    return;
-  }
-  document.querySelector('#contact-status').textContent = 'Номер телефону ще не додано. Незабаром тут можна буде зателефонувати до beerline.';
-});
-
 document.querySelector('#year').textContent = new Date().getFullYear();
+
+// Reveal only when supported; content remains visible without JavaScript.
+if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.benefits article, .product, .steps article, .review-inner').forEach((item, index) => {
+    item.classList.add('reveal');
+    item.style.setProperty('--delay', `${index % 3 * 70}ms`);
+    observer.observe(item);
+  });
+}
